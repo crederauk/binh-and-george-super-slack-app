@@ -12,7 +12,8 @@
   "license": "MIT",
   "dependencies": {
     "@slack/bolt": "^3.11.3",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "got": "^12.1.0"
   },
   "devDependencies": {
     "eslint": "^8.18.0",
