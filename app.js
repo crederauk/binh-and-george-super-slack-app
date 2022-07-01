@@ -1,12 +1,13 @@
 import 'dotenv/config';
 import SlackBolt from '@slack/bolt';
 import got from 'got';
-import { sanitize } from './src/utils/index.js';
+import { getSimpleMessageResponse, sanitize } from './src/utils/index.js';
 
 const { App } = SlackBolt;
 
 const COMMANDS = {
   DALL_E: 'bgdalle',
+  DALL_E_CAT: 'bgdalle-cat',
 };
 
 // Initializes your app with your bot token and signing secret
@@ -15,51 +16,32 @@ const app = new App({
   signingSecret: process.env.BNG_SLACK_SIGNING_SECRET,
 });
 
-app.command(
-  `/${COMMANDS.DALL_E}`,
-  async ({ ack, message, client, command, respond }) => {
-    console.dir({ message, client, command });
+app.command(`/${COMMANDS.DALL_E}`, async ({ ack, command, respond }) => {
+  await ack();
 
-    await ack();
+  const { text, user_name } = command;
 
-    const { text } = command;
-
-    if (!text) {
-      await respond({
-        response_type: 'ephemeral',
-        blocks: [
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: "Looks like you haven't included a query with your command. Try again with something like `bgdalle A goose destroying Tower Bridge` 😘.",
-            },
-          },
-        ],
-      });
-
-      return;
-    }
-
-    const sanitizedText = sanitize(text);
-    got(
-      `${process.env.BNG_DALL_E_SCRAPER_BASE_URL}?query_string=${sanitizedText}`
+  if (!text) {
+    await respond(
+      getSimpleMessageResponse(
+        "Looks like you haven't included a query with your command. Try again with something like `/bgdalle A goose destroying Tower Bridge` 😘."
+      )
     );
 
-    await respond({
-      response_type: 'ephemeral',
-      blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `Your query of *${sanitizedText}* has been received and, if everything goes right, you will receive your image within the next 3 minutes ☺️!`,
-          },
-        },
-      ],
-    });
+    return;
   }
-);
+
+  const sanitizedText = sanitize(text);
+  got(
+    `${process.env.BNG_DALL_E_SCRAPER_BASE_URL}?query_string=${sanitizedText}&username=${user_name}`
+  );
+
+  await respond(
+    getSimpleMessageResponse(
+      `Your query of *${sanitizedText}* has been received and, if everything goes right, you will receive your image within the next 3 minutes ☺️!`
+    )
+  );
+});
 
 (async () => {
   // Start your app
