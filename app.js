@@ -11,8 +11,8 @@ const COMMANDS = {
 
 // Initializes your app with your bot token and signing secret
 const app = new App({
-  token: process.env.SLACK_BOT_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  token: process.env.BNG_SLACK_BOT_TOKEN,
+  signingSecret: process.env.BNG_SLACK_SIGNING_SECRET,
 });
 
 app.command(
@@ -42,7 +42,9 @@ app.command(
     }
 
     const sanitizedText = sanitize(text);
-    got(`${process.env.DALL_E_SCRAPER_BASE_URL}?query_string=${sanitizedText}`);
+    got(
+      `${process.env.BNG_DALL_E_SCRAPER_BASE_URL}?query_string=${sanitizedText}`
+    );
 
     await respond({
       response_type: 'ephemeral',
