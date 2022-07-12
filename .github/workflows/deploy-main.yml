@@ -34,6 +34,7 @@ jobs:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           project_id: ${{ env.PROJECT_ID }}
+          env_vars: "BNG_SLACK_SIGNING_SECRET=${{ secrets.BNG_SLACK_SIGNING_SECRET }},BNG_SLACK_BOT_TOKEN=${{ secrets.BNG_SLACK_BOT_TOKEN }},BNG_DALL_E_SCRAPER_BASE_URL=${{ secrets.BNG_DALL_E_SCRAPER_BASE_URL }}"
           source: ./
 
       - name: Show output URL
